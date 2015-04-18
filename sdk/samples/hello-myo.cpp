@@ -183,6 +183,7 @@ void gestureThreadFunc() {
         // Hub::run() to send events to all registered device listeners.
         hub.addListener(&collector);
         
+        // int i = 1000;
         
         myo->unlock(myo::Myo::unlockHold);
         
@@ -190,10 +191,21 @@ void gestureThreadFunc() {
         while (1) {
             // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
             // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
+            myo->unlock(myo::Myo::unlockHold);
+            /*
+            if (i == 1000) {
+                i = 0;
+                myo->lock();
+                myo->unlock(myo::Myo::unlockHold);
+            }
+            i++;
+            */
+
             hub.run(1000/20);
             // After processing events, we call the print() member function we defined above to print out the values we've
             // obtained from any events that have occurred.
             currentPose = collector.currentPose.toString();
+
         }
         
         // If a standard exception occurred, we print out its message and exit.
