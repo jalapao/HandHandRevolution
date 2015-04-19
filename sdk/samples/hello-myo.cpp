@@ -11,13 +11,14 @@
 // The only file that needs to be included to use the Myo C++ SDK is myo.hpp.
 #include <myo/myo.hpp>
 
-#define screenHeight 20
-#define timeToGester 10
+#define screenHeight 40
+#define timeToGester 6
 int counter = 0;
 int score = 0;
 int gesterGenerated = -1;
 std::string screen[screenHeight];
 int expectedGester[screenHeight];
+int streak = 0;
 
 // Classes that inherit from myo::DeviceListener can be used to receive events from Myo devices. DeviceListener
 // provides several virtual functions for handling different kinds of events. If you do not override an event, the
@@ -175,12 +176,18 @@ public:
             }
             if (actualGester == expectedGester[screenHeight - 1]) {
                 score++;
+                if (streak < 0) {
+                    streak = 0;
+                }
+                streak++;
+            } else if (expectedGester[screenHeight - 1] >= 0) {
+                streak--;
             }
             for (int screenIndex = 0; screenIndex < screenHeight - 1; ++screenIndex) {
                 std::cout << screen[screenIndex] << std::endl;
                 //std::cout << "in for loop in if onArm";
             }
-            std::cout << screen[screenHeight - 1] << "; yourScore = " << score << "; yourInput = " << poseString << std::endl;
+            std::cout << screen[screenHeight - 1] << (isUnlocked ? ";unlocked" : ";locked  ") << "; yourScore = " << score << "; yourInput = " << poseString << std::endl;
             /*
             std::cout << '[' << (isUnlocked ? "unlocked" : "locked  ") << ']'
                       //<< '[' << (whichArm == myo::armLeft ? "L" : "R") << ']'
