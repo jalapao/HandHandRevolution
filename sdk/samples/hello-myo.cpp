@@ -8,6 +8,8 @@
 #include <string>
 #include <algorithm>
 #include <time.h>
+#include <thread>
+#include <unistd.h>
 
 // The only file that needs to be included to use the Myo C++ SDK is myo.hpp.
 #include <myo/myo.hpp>
@@ -18,9 +20,14 @@ int counter = 0;
 int score = 0;
 int gesterGenerated = -1;
 std::string screen[screenHeight];
+std::string poseString;
 int expectedGester[screenHeight];
 int streak = 0;
 int lifePoint = 10;
+int actualGester = -2;
+
+myo::Myo* myop;
+myo::Hub hub("com.example.hello-myo");
 
 using std::cout;
 using std::endl;
@@ -123,6 +130,11 @@ public:
     // For this example, the functions overridden above are sufficient.
 
     // We define this function to print the current values that were updated by the on...() functions above.
+
+    std::string getCurrentPose() {
+        return currentPose.toString();
+    }
+
     void print()
     {
         srand(time(0)); // use a different random seed every time.
@@ -130,7 +142,7 @@ public:
         num_drops++;
 
         // Clear the current line
-        std::cout << '\r';
+
 
         /*
         // Print out the orientation. Orientation data is always available, even if no arm is currently recognized.
@@ -140,12 +152,12 @@ public:
          */
 
         if (onArm) {
+            std::cout << '\r';
             // Print out the lock state, the currently recognized pose, and which arm Myo is being worn on.
 
             // Pose::toString() provides the human-readable name of a pose. We can also output a Pose directly to an
             // output stream (e.g. std::cout << currentPose;). In this case we want to get the pose name's length so
             // that we can fill the rest of the field with spaces below, so we obtain it as a string using toString().
-            std::string poseString = currentPose.toString();
             std::cout << "gesterGenerated = " << gesterGenerated;
             for (int lineIndex = screenHeight - 2; lineIndex > 0; --lineIndex) {
                 screen[lineIndex] = screen[lineIndex - 1];
@@ -171,19 +183,6 @@ public:
                     case 4: screen[0] = "                                            O ";
                         break;
                 }
-            }
-            int actualGester = -2;
-
-            if (poseString.compare("rest") == 0) {
-                actualGester = 0;
-            } else if (poseString.compare("fingersSpread") == 0) {
-                actualGester = 1;
-            } else if (poseString.compare("waveIn") == 0) {
-                actualGester = 2;
-            } else if (poseString.compare("waveOut") == 0) {
-                actualGester = 3;
-            } else if (poseString.compare("fist") == 0) {
-                actualGester = 4;
             }
 
             if (num_drops >= screenHeight) {
@@ -242,64 +241,57 @@ public:
     unsigned int num_drops; // the number of drops already
 };
 
+DataCollector collector;
+
+void gestureFunc() {
+
+    while (1) {
+        myop->unlock(myo::Myo::unlockHold);
+        hub.run(1000/10);
+
+        poseString = collector.getCurrentPose();
+
+        if (poseString.compare("rest") == 0) {
+            actualGester = 0;
+        } else if (poseString.compare("fingersSpread") == 0) {
+            actualGester = 1;
+        } else if (poseString.compare("waveIn") == 0) {
+            actualGester = 2;
+        } else if (poseString.compare("waveOut") == 0) {
+            actualGester = 3;
+        } else if (poseString.compare("fist") == 0) {
+            actualGester = 4;
+        }
+    }
+}
+
 void gameLogic() {
-    // We catch any exceptions that might occur below -- see the catch statement for more details.
-    try {
 
-        // First, we create a Hub with our application identifier. Be sure not to use the com.example namespace when
-        // publishing your application. The Hub provides access to one or more Myos.
-        myo::Hub hub("com.example.hello-myo");
+    counter = 0;
+    score = 0;
+    gesterGenerated = -1;
 
-        std::cout << "Attempting to find a Myo..." << std::endl;
+    streak = 0;
+    lifePoint = 32;
 
-        // Next, we attempt to find a Myo to use. If a Myo is already paired in Myo Connect, this will return that Myo
-        // immediately.
-        // waitForMyo() takes a timeout value in milliseconds. In this case we will try to find a Myo for 10 seconds, and
-        // if that fails, the function will return a null pointer.
-        myo::Myo* myo = hub.waitForMyo(10000);
+    for (int i = 0; i != screenHeight; i++) {
+        expectedGester[i] = -1;
+        screen[i] = "";
+    }
 
-        // If waitForMyo() returned a null pointer, we failed to find a Myo, so exit with an error message.
-        if (!myo) {
-            throw std::runtime_error("Unable to find a Myo!");
+    screen[screenHeight-1] = "====   fingersSpread | waveIn | waveOut | fist ====";
+
+    while (1) {
+
+        collector.print();
+        counter++;
+
+        if (lifePoint <= 0) {
+            std::cout << "Game Over" << std::endl;
+            break;
         }
 
-        // We've found a Myo.
-        std::cout << "Connected to a Myo armband!" << std::endl << std::endl;
-
-        // Next we construct an instance of our DeviceListener, so that we can register it with the Hub.
-        DataCollector collector;
-
-        // Hub::addListener() takes the address of any object whose class inherits from DeviceListener, and will cause
-        // Hub::run() to send events to all registered device listeners.
-        hub.addListener(&collector);
-        myo->unlock(myo::Myo::unlockHold);
-        //std::cout << screen[screenHeight-1];
-        // Finally we enter our main loop.
-        screen[screenHeight-1] = "====   fingersSpread | waveIn | waveOut | fist ====";
-        //screen[screenHeight-1] = "======================================";
-
-        while (1) {
-            // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
-            // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
-            myo->unlock(myo::Myo::unlockHold);
-            hub.run(1000/10);
-            //std::cout << "in loop";
-            // After processing events, we call the print() member function we defined above to print out the values we've
-            // obtained from any events that have occurred.
-            collector.print();
-            counter++;
-
-            if (lifePoint <= 0) {
-                std::cout << "Game Over" << std::endl;
-                break;
-            }
-        }
-
-        // If a standard exception occurred, we print out its message and exit.
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        std::cerr << "Press enter to continue.";
-        std::cin.ignore();
+        usleep(100000);
     }
 }
 
@@ -307,6 +299,46 @@ const int START = 1;
 const int END = 2;
 
 int main(int argc, char** argv) {
+    try {
+
+        // First, we create a Hub with our application identifier. Be sure not to use the com.example namespace when
+        // publishing your application. The Hub provides access to one or more Myos.
+        std::cout << "Attempting to find a Myo..." << std::endl;
+
+        // Next, we attempt to find a Myo to use. If a Myo is already paired in Myo Connect, this will return that Myo
+        // immediately.
+        // waitForMyo() takes a timeout value in milliseconds. In this case we will try to find a Myo for 10 seconds, and
+        // if that fails, the function will return a null pointer.
+        myop = hub.waitForMyo(10000);
+
+        // If waitForMyo() returned a null pointer, we failed to find a Myo, so exit with an error message.
+        if (!myop) {
+            throw std::runtime_error("Unable to find a Myo!");
+        }
+
+        // We've found a Myo.
+        std::cout << "Connected to a Myo armband!" << std::endl << std::endl;
+
+        // Next we construct an instance of our DeviceListener, so that we can register it with the Hub.
+
+        // Hub::addListener() takes the address of any object whose class inherits from DeviceListener, and will cause
+        // Hub::run() to send events to all registered device listeners.
+        hub.addListener(&collector);
+        myop->unlock(myo::Myo::unlockHold);
+        //std::cout << screen[screenHeight-1];
+        // Finally we enter our main loop.
+
+        //screen[screenHeight-1] = "======================================";
+
+        // If a standard exception occurred, we print out its message and exit.
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Press enter to continue.";
+        std::cin.ignore();
+    }
+
+    std::thread gestureThread(gestureFunc);
+
     while (true) {
         cout << "******* MENU *******" << endl;
         cout << "****  1  Start  ****" << endl;
