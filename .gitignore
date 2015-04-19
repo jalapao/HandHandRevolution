@@ -1,5 +1,6 @@
 # Mac temp files
 .DS_Store
+*.swp # for vim tmp files
 
 # Xcode
 #
