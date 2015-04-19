@@ -137,6 +137,8 @@ public:
 
     void print()
     {
+        system("clear");
+
         srand(time(0)); // use a different random seed every time.
 
         num_drops++;
@@ -158,7 +160,7 @@ public:
             // Pose::toString() provides the human-readable name of a pose. We can also output a Pose directly to an
             // output stream (e.g. std::cout << currentPose;). In this case we want to get the pose name's length so
             // that we can fill the rest of the field with spaces below, so we obtain it as a string using toString().
-            std::cout << "gesterGenerated = " << gesterGenerated;
+            //std::cout << "gesterGenerated = " << gesterGenerated;
             for (int lineIndex = screenHeight - 2; lineIndex > 0; --lineIndex) {
                 screen[lineIndex] = screen[lineIndex - 1];
             }
