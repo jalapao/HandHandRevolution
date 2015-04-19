@@ -26,7 +26,7 @@ int streak = 0;
 class DataCollector : public myo::DeviceListener {
 public:
     DataCollector()
-    : onArm(false), isUnlocked(false), roll_w(0), pitch_w(0), yaw_w(0), currentPose()
+    : onArm(false), isUnlocked(false), roll_w(0), pitch_w(0), yaw_w(0), currentPose(), num_drops(0)
     {
     }
 
@@ -120,6 +120,8 @@ public:
     // We define this function to print the current values that were updated by the on...() functions above.
     void print()
     {
+        num_drops++;
+
         // Clear the current line
         std::cout << '\r';
 
@@ -163,6 +165,7 @@ public:
                 }
             }
             int actualGester = -2;
+
             if (poseString.compare("rest") == 0) {
                 actualGester = 0;
             } else if (poseString.compare("fingersSpread") == 0) {
@@ -174,16 +177,21 @@ public:
             } else if (poseString.compare("fist") == 0) {
                 actualGester = 4;
             }
-            if (actualGester == expectedGester[screenHeight - 1]) {
-                score++;
-                if (streak < 0) {
-                    streak = 0;
+
+            if (num_drops >= screenHeight) {
+                // Only do important score changes when touch the first one
+                if (actualGester == expectedGester[screenHeight - 1]) {
+                    score++;
+                    if (streak < 0) {
+                        streak = 0;
+                    }
+                    streak++;
+                } else if (expectedGester[screenHeight - 1] >= 0) {
+                    // FIXME track here about when to lose
+                    streak--;
                 }
-                streak++;
-            } else if (expectedGester[screenHeight - 1] >= 0) {
-                // FIXME track here about when to lose
-                streak--;
             }
+
             for (int screenIndex = 0; screenIndex < screenHeight - 1; ++screenIndex) {
                 std::cout << screen[screenIndex] << std::endl;
                 //std::cout << "in for loop in if onArm";
@@ -217,6 +225,9 @@ public:
     // These values are set by onOrientationData() and onPose() above.
     int roll_w, pitch_w, yaw_w;
     myo::Pose currentPose;
+
+    // Controller variables for the game
+    unsigned int num_drops; // the number of drops already
 };
 
 int main(int argc, char** argv)
