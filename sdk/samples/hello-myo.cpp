@@ -22,6 +22,9 @@ int expectedGester[screenHeight];
 int streak = 0;
 int lifePoint = 10;
 
+using std::cout;
+using std::endl;
+
 // Classes that inherit from myo::DeviceListener can be used to receive events from Myo devices. DeviceListener
 // provides several virtual functions for handling different kinds of events. If you do not override an event, the
 // default behavior is to do nothing.
@@ -239,65 +242,89 @@ public:
     unsigned int num_drops; // the number of drops already
 };
 
-int main(int argc, char** argv)
-{
+void gameLogic() {
     // We catch any exceptions that might occur below -- see the catch statement for more details.
     try {
 
-    // First, we create a Hub with our application identifier. Be sure not to use the com.example namespace when
-    // publishing your application. The Hub provides access to one or more Myos.
-    myo::Hub hub("com.example.hello-myo");
+        // First, we create a Hub with our application identifier. Be sure not to use the com.example namespace when
+        // publishing your application. The Hub provides access to one or more Myos.
+        myo::Hub hub("com.example.hello-myo");
 
-    std::cout << "Attempting to find a Myo..." << std::endl;
+        std::cout << "Attempting to find a Myo..." << std::endl;
 
-    // Next, we attempt to find a Myo to use. If a Myo is already paired in Myo Connect, this will return that Myo
-    // immediately.
-    // waitForMyo() takes a timeout value in milliseconds. In this case we will try to find a Myo for 10 seconds, and
-    // if that fails, the function will return a null pointer.
-    myo::Myo* myo = hub.waitForMyo(10000);
+        // Next, we attempt to find a Myo to use. If a Myo is already paired in Myo Connect, this will return that Myo
+        // immediately.
+        // waitForMyo() takes a timeout value in milliseconds. In this case we will try to find a Myo for 10 seconds, and
+        // if that fails, the function will return a null pointer.
+        myo::Myo* myo = hub.waitForMyo(10000);
 
-    // If waitForMyo() returned a null pointer, we failed to find a Myo, so exit with an error message.
-    if (!myo) {
-        throw std::runtime_error("Unable to find a Myo!");
-    }
-
-    // We've found a Myo.
-    std::cout << "Connected to a Myo armband!" << std::endl << std::endl;
-
-    // Next we construct an instance of our DeviceListener, so that we can register it with the Hub.
-    DataCollector collector;
-
-    // Hub::addListener() takes the address of any object whose class inherits from DeviceListener, and will cause
-    // Hub::run() to send events to all registered device listeners.
-    hub.addListener(&collector);
-    myo->unlock(myo::Myo::unlockHold);
-    //std::cout << screen[screenHeight-1];
-    // Finally we enter our main loop.
-    screen[screenHeight-1] = "====   fingersSpread | waveIn | waveOut | fist ====";
-    //screen[screenHeight-1] = "======================================";
-
-    while (1) {
-        // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
-        // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
-        myo->unlock(myo::Myo::unlockHold);
-        hub.run(1000/10);
-        //std::cout << "in loop";
-        // After processing events, we call the print() member function we defined above to print out the values we've
-        // obtained from any events that have occurred.
-        collector.print();
-        counter++;
-
-        if (lifePoint <= 0) {
-            std::cout << "Game Over" << std::endl;
-            break;
+        // If waitForMyo() returned a null pointer, we failed to find a Myo, so exit with an error message.
+        if (!myo) {
+            throw std::runtime_error("Unable to find a Myo!");
         }
-    }
 
-    // If a standard exception occurred, we print out its message and exit.
+        // We've found a Myo.
+        std::cout << "Connected to a Myo armband!" << std::endl << std::endl;
+
+        // Next we construct an instance of our DeviceListener, so that we can register it with the Hub.
+        DataCollector collector;
+
+        // Hub::addListener() takes the address of any object whose class inherits from DeviceListener, and will cause
+        // Hub::run() to send events to all registered device listeners.
+        hub.addListener(&collector);
+        myo->unlock(myo::Myo::unlockHold);
+        //std::cout << screen[screenHeight-1];
+        // Finally we enter our main loop.
+        screen[screenHeight-1] = "====   fingersSpread | waveIn | waveOut | fist ====";
+        //screen[screenHeight-1] = "======================================";
+
+        while (1) {
+            // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
+            // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
+            myo->unlock(myo::Myo::unlockHold);
+            hub.run(1000/10);
+            //std::cout << "in loop";
+            // After processing events, we call the print() member function we defined above to print out the values we've
+            // obtained from any events that have occurred.
+            collector.print();
+            counter++;
+
+            if (lifePoint <= 0) {
+                std::cout << "Game Over" << std::endl;
+                break;
+            }
+        }
+
+        // If a standard exception occurred, we print out its message and exit.
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         std::cerr << "Press enter to continue.";
         std::cin.ignore();
-        return 1;
+    }
+}
+
+const int START = 1;
+const int END = 2;
+
+int main(int argc, char** argv)
+{
+    while (true) {
+        cout << "******* MENU *******" << endl;
+        cout << "****  1  Start  ****" << endl;
+        cout << "****  2  End    ****" << endl;
+
+        int mode;
+
+        std::cin >> mode;
+
+        switch (mode) {
+            case START:
+                gameLogic();
+                break;
+            case END:
+                return 0;
+            default:
+                continue;
+        }
     }
 }
