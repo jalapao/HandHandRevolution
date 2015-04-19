@@ -20,6 +20,7 @@ int gesterGenerated = -1;
 std::string screen[screenHeight];
 int expectedGester[screenHeight];
 int streak = 0;
+int lifePoint = 10;
 
 // Classes that inherit from myo::DeviceListener can be used to receive events from Myo devices. DeviceListener
 // provides several virtual functions for handling different kinds of events. If you do not override an event, the
@@ -193,6 +194,10 @@ public:
                 } else if (expectedGester[screenHeight - 1] >= 0) {
                     // FIXME track here about when to lose
                     streak--;
+
+                    if (expectedGester[screenHeight - 1] > 0) {
+                        lifePoint--;
+                    }
                 }
             }
 
@@ -202,7 +207,7 @@ public:
             }
             std::cout << screen[screenHeight - 1];
             // std::cout << (isUnlocked ? ";unlocked" : ";locked  ");
-            std::cout << "\t  Score: " << score << "; Your Input: " << poseString << std::endl;
+            std::cout << "\t  Score: " << score << "; Your Input: " << poseString << "; Life: " << lifePoint << std::endl;
             /*
             std::cout << '[' << (isUnlocked ? "unlocked" : "locked  ") << ']'
                       //<< '[' << (whichArm == myo::armLeft ? "L" : "R") << ']'
@@ -281,6 +286,11 @@ int main(int argc, char** argv)
         // obtained from any events that have occurred.
         collector.print();
         counter++;
+
+        if (lifePoint < 0) {
+            std::cout << "Game Over" << std::endl;
+            break;
+        }
     }
 
     // If a standard exception occurred, we print out its message and exit.
