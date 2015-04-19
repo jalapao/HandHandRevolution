@@ -181,13 +181,16 @@ public:
                 }
                 streak++;
             } else if (expectedGester[screenHeight - 1] >= 0) {
+                // FIXME track here about when to lose
                 streak--;
             }
             for (int screenIndex = 0; screenIndex < screenHeight - 1; ++screenIndex) {
                 std::cout << screen[screenIndex] << std::endl;
                 //std::cout << "in for loop in if onArm";
             }
-            std::cout << screen[screenHeight - 1] << (isUnlocked ? ";unlocked" : ";locked  ") << "; yourScore = " << score << "; yourInput = " << poseString << std::endl;
+            std::cout << screen[screenHeight - 1];
+            // std::cout << (isUnlocked ? ";unlocked" : ";locked  ");
+            std::cout << "  Score: " << score << "; Your Input: " << poseString << std::endl;
             /*
             std::cout << '[' << (isUnlocked ? "unlocked" : "locked  ") << ']'
                       //<< '[' << (whichArm == myo::armLeft ? "L" : "R") << ']'
@@ -250,7 +253,9 @@ int main(int argc, char** argv)
     myo->unlock(myo::Myo::unlockHold);
     //std::cout << screen[screenHeight-1];
     // Finally we enter our main loop.
-    screen[screenHeight-1] = "rest|fingersSpread|waveIn|waveOut|fist";
+    //screen[screenHeight-1] = "rest|fingersSpread|waveIn|waveOut|fist";
+    screen[screenHeight-1] = "======================================";
+
     while (1) {
         // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
         // In this case, we wish to update our display 20 times a second, so we run for 1000/20 milliseconds.
