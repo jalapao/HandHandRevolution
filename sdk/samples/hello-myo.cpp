@@ -12,11 +12,12 @@
 #include <myo/myo.hpp>
 
 #define screenHeight 20
+#define timeToGester 10
 int counter = 0;
-int currentLine = 0;
 int score = 0;
 int gesterGenerated = -1;
 std::string screen[screenHeight];
+int expectedGester[screenHeight];
 
 // Classes that inherit from myo::DeviceListener can be used to receive events from Myo devices. DeviceListener
 // provides several virtual functions for handling different kinds of events. If you do not override an event, the
@@ -136,33 +137,44 @@ public:
             // that we can fill the rest of the field with spaces below, so we obtain it as a string using toString().
             std::string poseString = currentPose.toString();
             std::cout << "gesterGenerated = " << gesterGenerated;
-            if (counter % screenHeight == 0) {
-                currentLine = 0;
+            for (int lineIndex = screenHeight - 2; lineIndex > 0; --lineIndex) {
+                screen[lineIndex] = screen[lineIndex - 1];
+            }
+            for (int lineIndex = screenHeight - 1; lineIndex > 0; --lineIndex) {
+                expectedGester[lineIndex] = expectedGester[lineIndex - 1];
+            }
+            screen[0] = "";
+            expectedGester[0] = -1;
+            if (counter % timeToGester == 0) {
                 gesterGenerated = (rand() % 5);
+                expectedGester[0] = gesterGenerated;
                 switch (gesterGenerated) {
-                    case 0: screen[0] = "rest"; break;
-                    case 1: screen[0] = "     fingersSpread"; break;
-                    case 2: screen[0] = "                   waveIn"; break;
-                    case 3: screen[0] = "                          waveOut"; break;
-                    case 4: screen[0] = "                                  fist"; break;
+                    case 0: screen[0] = "rest";
+                        break;
+                    case 1: screen[0] = "     fingersSpread";
+                        break;
+                    case 2: screen[0] = "                   waveIn";
+                        break;
+                    case 3: screen[0] = "                          waveOut";
+                        break;
+                    case 4: screen[0] = "                                  fist";
+                        break;
                 }
-            } else if (currentLine < screenHeight - 2) {
-                screen[currentLine + 1] = screen[currentLine];
-                screen[currentLine] = "";
-                currentLine++;
-            } else {
-                screen[screenHeight - 2] = "";
-                std::string expectedResult = "";
-                switch (gesterGenerated) {
-                    case 0: expectedResult = "rest"; break;
-                    case 1: expectedResult = "fingersSpread"; break;
-                    case 2: expectedResult = "waveIn"; break;
-                    case 3: expectedResult = "waveOut"; break;
-                    case 4: expectedResult = "fist"; break;
-                }
-                if (poseString.compare(expectedResult) == 0) {
-                    score++;
-                }
+            }
+            int actualGester = -2;
+            if (poseString.compare("rest") == 0) {
+                actualGester = 0;
+            } else if (poseString.compare("fingersSpread") == 0) {
+                actualGester = 1;
+            } else if (poseString.compare("waveIn") == 0) {
+                actualGester = 2;
+            } else if (poseString.compare("waveOut") == 0) {
+                actualGester = 3;
+            } else if (poseString.compare("fist") == 0) {
+                actualGester = 4;
+            }
+            if (actualGester == expectedGester[screenHeight - 1]) {
+                score++;
             }
             for (int screenIndex = 0; screenIndex < screenHeight - 1; ++screenIndex) {
                 std::cout << screen[screenIndex] << std::endl;
