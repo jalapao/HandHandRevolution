@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F92110011AE31AB300193667 /* sdk in Resources */ = {isa = PBXBuildFile; fileRef = F92110001AE31AB300193667 /* sdk */; };
 		F9CC6B8D1AE30AEA00BF255C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC6B8C1AE30AEA00BF255C /* AppDelegate.swift */; };
 		F9CC6B8F1AE30AEA00BF255C /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC6B8E1AE30AEA00BF255C /* GameView.swift */; };
 		F9CC6B911AE30AEA00BF255C /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC6B901AE30AEA00BF255C /* GameViewController.swift */; };
@@ -27,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F92110001AE31AB300193667 /* sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; path = sdk; sourceTree = "<group>"; };
 		F9CC6B871AE30AEA00BF255C /* HandHandRevolution.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HandHandRevolution.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9CC6B8B1AE30AEA00BF255C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F9CC6B8C1AE30AEA00BF255C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 				F9CC6B891AE30AEA00BF255C /* HandHandRevolution */,
 				F9CC6BA01AE30AEA00BF255C /* HandHandRevolutionTests */,
 				F9CC6B881AE30AEA00BF255C /* Products */,
+				F92110001AE31AB300193667 /* sdk */,
 			);
 			sourceTree = "<group>";
 		};
@@ -196,6 +199,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9CC6B931AE30AEA00BF255C /* art.scnassets in Resources */,
+				F92110011AE31AB300193667 /* sdk in Resources */,
 				F9CC6B951AE30AEA00BF255C /* Images.xcassets in Resources */,
 				F9CC6B981AE30AEA00BF255C /* MainMenu.xib in Resources */,
 			);
@@ -408,6 +412,7 @@
 				F9CC6BA91AE30AEA00BF255C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F9CC6BAA1AE30AEA00BF255C /* Build configuration list for PBXNativeTarget "HandHandRevolutionTests" */ = {
 			isa = XCConfigurationList;
@@ -416,6 +421,7 @@
 				F9CC6BAC1AE30AEA00BF255C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
