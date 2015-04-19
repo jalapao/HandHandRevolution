@@ -11,7 +11,7 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>20F36172B6D552A584808D861BB560FE25709B55</key>
-		<string>github.com:jalapao/HandHandRevolution.git</string>
+		<string>https://github.com/jalapao/HandHandRevolution.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>sdk/samples/hello-myo.xcodeproj</string>
@@ -21,7 +21,7 @@
 		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>github.com:jalapao/HandHandRevolution.git</string>
+	<string>https://github.com/jalapao/HandHandRevolution.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>

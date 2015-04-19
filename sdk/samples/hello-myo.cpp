@@ -12,7 +12,7 @@
 #include <myo/myo.hpp>
 
 #define screenHeight 40
-#define timeToGester 6
+#define timeToGester 12
 int counter = 0;
 int score = 0;
 int gesterGenerated = -1;
@@ -152,13 +152,13 @@ public:
                 switch (gesterGenerated) {
                     case 0: screen[0] = "rest";
                         break;
-                    case 1: screen[0] = "     fingersSpread";
+                    case 1: screen[0] = "         \\|||/    ";
                         break;
-                    case 2: screen[0] = "                   waveIn";
+                    case 2: screen[0] = "                   <<----";
                         break;
-                    case 3: screen[0] = "                          waveOut";
+                    case 3: screen[0] = "                           ---->>";
                         break;
-                    case 4: screen[0] = "                                  fist";
+                    case 4: screen[0] = "                                    O ";
                         break;
                 }
             }
