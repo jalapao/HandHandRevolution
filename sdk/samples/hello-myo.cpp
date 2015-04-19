@@ -287,7 +287,7 @@ int main(int argc, char** argv)
         collector.print();
         counter++;
 
-        if (lifePoint < 0) {
+        if (lifePoint <= 0) {
             std::cout << "Game Over" << std::endl;
             break;
         }
