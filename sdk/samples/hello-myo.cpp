@@ -274,7 +274,7 @@ void gameLogic() {
     gesterGenerated = -1;
 
     streak = 0;
-    lifePoint = 32;
+    lifePoint = 10;
 
     for (int i = 0; i != screenHeight; i++) {
         expectedGester[i] = -1;
