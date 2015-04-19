@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <algorithm>
+#include <time.h>
 
 // The only file that needs to be included to use the Myo C++ SDK is myo.hpp.
 #include <myo/myo.hpp>
@@ -120,6 +121,8 @@ public:
     // We define this function to print the current values that were updated by the on...() functions above.
     void print()
     {
+        srand(time(0)); // use a different random seed every time.
+
         num_drops++;
 
         // Clear the current line
