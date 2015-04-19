@@ -8,9 +8,14 @@
 #include <string>
 #include <algorithm>
 #include <thread>
+#include <stdlib.h>
+#include <time.h>
 
 // The only file that needs to be included to use the Myo C++ SDK is myo.hpp.
 #include <myo/myo.hpp>
+
+using std::cout;
+using std::endl;
 
 // Classes that inherit from myo::DeviceListener can be used to receive events from Myo devices. DeviceListener
 // provides several virtual functions for handling different kinds of events. If you do not override an event, the
@@ -159,34 +164,34 @@ void gestureThreadFunc() {
         // First, we create a Hub with our application identifier. Be sure not to use the com.example namespace when
         // publishing your application. The Hub provides access to one or more Myos.
         myo::Hub hub("com.example.hello-myo");
-        
+
         std::cout << "Attempting to find a Myo..." << std::endl;
-        
+
         // Next, we attempt to find a Myo to use. If a Myo is already paired in Myo Connect, this will return that Myo
         // immediately.
         // waitForMyo() takes a timeout value in milliseconds. In this case we will try to find a Myo for 10 seconds, and
         // if that fails, the function will return a null pointer.
         myo::Myo* myo = hub.waitForMyo(10000);
-        
+
         // If waitForMyo() returned a null pointer, we failed to find a Myo, so exit with an error message.
         if (!myo) {
             throw std::runtime_error("Unable to find a Myo!");
         }
-        
+
         // We've found a Myo.
         std::cout << "Connected to a Myo armband!" << std::endl << std::endl;
-        
+
         // Next we construct an instance of our DeviceListener, so that we can register it with the Hub.
         DataCollector collector;
-        
+
         // Hub::addListener() takes the address of any object whose class inherits from DeviceListener, and will cause
         // Hub::run() to send events to all registered device listeners.
         hub.addListener(&collector);
-        
+
         // int i = 1000;
-        
+
         myo->unlock(myo::Myo::unlockHold);
-        
+
         // Finally we enter our main loop.
         while (1) {
             // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
@@ -207,7 +212,7 @@ void gestureThreadFunc() {
             currentPose = collector.currentPose.toString();
 
         }
-        
+
         // If a standard exception occurred, we print out its message and exit.
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
@@ -217,14 +222,119 @@ void gestureThreadFunc() {
 
 }
 
+
+/*
+ * How many different possible columns are there.
+ * Here it's 4 because only 4 actions are supported.
+ */
+const int COLUMN = 4;
+
+const int MOV_LEFT = 1;
+const int MOV_RIGHT = 2;
+const int MOV_FIST = 3;
+const int MOV_PALM = 4;
+
+
+
+static void generate_random_data(int **data, int row)
+{
+    /* to clear the data first */
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < COLUMN; j++)
+        {
+            data[i][j] = 0;
+        }
+    }
+
+    /* generate random data */
+    srand(time(0));
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < COLUMN; j++)
+        {
+            if (rand() % 2 == 0)
+            {
+                data[i][j] = 0;
+                continue;
+            }
+
+            data[i][j] = rand() % 4 + 1;
+            break;
+        }
+    }
+}
+
+
+
+static void print_data(int **data, int row)
+{
+    for (int i = 0; i < row; i++)
+    {
+        cout << endl;
+        cout << i << ":\t";
+        for (int j = 0; j < COLUMN; j++)
+        {
+            cout << "|\t";
+            if (data[i][j] == j+1)
+            {
+                cout << "*\t";
+            }
+            else
+            {
+                cout << '\t';
+            }
+        }
+        cout << '|';
+        cout << endl;
+    }
+
+    cout << "\t\tLEFT\tRIGHT\tFIST\tPALM" << endl;
+}
+
+
 int main(int argc, char** argv)
 {
+    /*
     std::thread gestureThread(gestureThreadFunc);
-    
+     */
+
+
+    const int ROW = 10;
+
+    int **data = (int **) malloc(ROW * sizeof(int*));
+    for (int i = 0; i < ROW; i++)
+    {
+        data[i] = (int*) malloc(COLUMN * sizeof(int));
+    }
+
+    int count = 0;
+    while (true)
+    {
+        if (count > 100000000)
+        {
+            system("clear");
+            generate_random_data(data, ROW);
+            print_data(data, ROW);
+
+            count = 0;
+        }
+        count++;
+    }
+
+
+    /*
     while (true)
     {
         std::cout << currentPose << std::endl;
     }
-    
+    */
+
+    for (int i = 0; i < ROW; i++)
+    {
+        free(data[i]);
+    }
+    free(data);
+
     return 0;
 }
