@@ -155,15 +155,16 @@ public:
                 gesterGenerated = (rand() % 5);
                 expectedGester[0] = gesterGenerated;
                 switch (gesterGenerated) {
-                    case 0: screen[0] = "rest";
+                    //case 0: screen[0] = "rest"; // We'll just pretend as if REST never appears.
+                    case 0: screen[0] = "     ";
                         break;
-                    case 1: screen[0] = "     fingersSpread";
+                    case 1: screen[0] = "       fingersSpread";
                         break;
-                    case 2: screen[0] = "                   waveIn";
+                    case 2: screen[0] = "                       waveIn";
                         break;
-                    case 3: screen[0] = "                          waveOut";
+                    case 3: screen[0] = "                                waveOut";
                         break;
-                    case 4: screen[0] = "                                  fist";
+                    case 4: screen[0] = "                                          fist";
                         break;
                 }
             }
@@ -201,7 +202,7 @@ public:
             }
             std::cout << screen[screenHeight - 1];
             // std::cout << (isUnlocked ? ";unlocked" : ";locked  ");
-            std::cout << "  Score: " << score << "; Your Input: " << poseString << std::endl;
+            std::cout << "\t  Score: " << score << "; Your Input: " << poseString << std::endl;
             /*
             std::cout << '[' << (isUnlocked ? "unlocked" : "locked  ") << ']'
                       //<< '[' << (whichArm == myo::armLeft ? "L" : "R") << ']'
@@ -267,8 +268,8 @@ int main(int argc, char** argv)
     myo->unlock(myo::Myo::unlockHold);
     //std::cout << screen[screenHeight-1];
     // Finally we enter our main loop.
-    //screen[screenHeight-1] = "rest|fingersSpread|waveIn|waveOut|fist";
-    screen[screenHeight-1] = "======================================";
+    screen[screenHeight-1] = "====   fingersSpread | waveIn | waveOut | fist ====";
+    //screen[screenHeight-1] = "======================================";
 
     while (1) {
         // In each iteration of our main loop, we run the Myo event loop for a set number of milliseconds.
